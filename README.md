@@ -26,7 +26,7 @@ This repository contains a script to quickly set up a local multi-node Kubernete
 
 2.  **Run the setup script:**
     ```bash
-    ./setup_multpass_k8s.sh
+    ./setup_multpass_k8s.sh setup
     ```
 
 3.  **Configure kubectl:**
@@ -40,12 +40,17 @@ This repository contains a script to quickly set up a local multi-node Kubernete
     kubectl get nodes
     ```
 
-## Clean Up
+## Usage
 
-To tear down the environment and delete all created VMs:
+The script supports the following commands:
+
+-   `setup`: Provisions VMs and sets up the MicroK8s cluster.
+-   `clean`: Stops, deletes, and purges all VMs.
+
+You can combine these commands. For example, to perform a fresh installation:
 
 ```bash
-./setup_multpass_k8s.sh clean
+./setup_multpass_k8s.sh clean setup
 ```
 
 ## Configuration
