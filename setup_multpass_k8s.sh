@@ -77,13 +77,11 @@ function setup_cluster() {
     # -----------------------------
     # Initialize cluster
     # -----------------------------
-    echo "Generating join command..."
-    # We need to capture the join command carefully. 
-    # Sometimes it takes a moment for the node to be ready to add others.
-    JOIN_CMD=$(multipass exec mk8s-1 -- microk8s add-node | grep "microk8s join" | head -n1)
-    echo "Join command: $JOIN_CMD"
+    echo "Joining worker nodes..."
 
     for VM in "${K8S_VM_NAMES[@]:1}"; do
+        echo "Generating join command for $VM..."
+        JOIN_CMD=$(multipass exec mk8s-1 -- microk8s add-node | grep "microk8s join" | head -n1)
         echo "Joining $VM..."
         multipass exec "$VM" -- sudo $JOIN_CMD
     done
