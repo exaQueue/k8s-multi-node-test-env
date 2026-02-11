@@ -90,15 +90,14 @@ function setup_cluster() {
     # Add hosts file to each
     # -----------------------------
     echo "Updating /etc/hosts on all nodes..."
-    mapfile -t lines < <(
+    while IFS= read -r line; do
+        for VM in "${K8S_VM_NAMES[@]}" "$NFS_VM"; do
+            multipass exec "$VM" -- sudo bash -c "echo '$line' | tee -a /etc/hosts" </dev/null
+        done
+        done < <(
         multipass list --format json \
             | jq -r '.list[] | "\(.ipv4[0]) \(.name)"'
     )
-    for line in "${lines[@]}"; do
-        for VM in "${K8S_VM_NAMES[@]}" "$NFS_VM"; do
-            multipass exec "$VM" -- sudo bash -c "echo '$line' | tee -a /etc/hosts"
-        done
-    done
 
     # -----------------------------
     # Export kubeconfig
