@@ -6,8 +6,8 @@
 K8S_CHANNEL="1.30"
 K8S_VM_NAMES=("mk8s-1" "mk8s-2" "mk8s-3")
 NFS_VM="nfs"
-CPUS=2
-MEM=4G
+CPUS=1
+MEM=4.0G
 DISK=20G
 
 # -----------------------------
@@ -39,8 +39,10 @@ function setup_cluster() {
     multipass exec "$NFS_VM" -- sudo apt install -y nfs-kernel-server
     multipass exec "$NFS_VM" -- sudo systemctl enable nfs-server
     multipass exec "$NFS_VM" -- sudo systemctl start nfs-server
-    multipass exec "$NFS_VM" -- bash -c 'sudo mkdir -p /exports/slurm && sudo chown nobody:nogroup /exports/slurm'
-    multipass exec "$NFS_VM" -- sudo bash -c "echo '/exports/slurm *(rw,sync,no_subtree_check,no_root_squash)'>>/etc/exports"
+    multipass exec "$NFS_VM" -- bash -c 'sudo mkdir -p /exports/slurm/shared && sudo chown nobody:nogroup /exports/slurm/shared'
+    multipass exec "$NFS_VM" -- bash -c 'sudo mkdir -p /exports/slurm/keys && sudo chown root:root /exports/slurm/keys && sudo chmod 755 /exports/slurm/keys'
+    multipass exec "$NFS_VM" -- sudo bash -c "echo '/exports/slurm/shared *(rw,sync,no_subtree_check,no_root_squash)'>>/etc/exports"
+    multipass exec "$NFS_VM" -- sudo bash -c "echo '/exports/slurm/keys *(rw,sync,no_subtree_check,no_root_squash)'>>/etc/exports"
     multipass exec "$NFS_VM" -- sudo exportfs -rav
     multipass exec "$NFS_VM" -- sudo ufw allow nfs
 
@@ -124,13 +126,13 @@ for arg in "$@"; do
         clean)
             clean_cluster
             ;; \
-        setup)
+            setup)
             setup_cluster
             ;; \
-        *)
+            *)
             echo "Unknown argument: $arg"
             echo "Usage: $0 {clean|setup} [clean|setup ...]"
             exit 1
             ;; \
-    esac
+        esac
 done
