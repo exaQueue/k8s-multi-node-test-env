@@ -40,9 +40,9 @@ function setup_cluster() {
     multipass exec "$NFS_VM" -- sudo systemctl enable nfs-server
     multipass exec "$NFS_VM" -- sudo systemctl start nfs-server
     multipass exec "$NFS_VM" -- bash -c 'sudo mkdir -p /exports/slurm/shared && sudo chown nobody:nogroup /exports/slurm/shared'
-    multipass exec "$NFS_VM" -- bash -c 'sudo mkdir -p /exports/slurm/keys && sudo chown root:root /exports/slurm/keys && sudo chmod 755 /exports/slurm/keys'
+    multipass exec "$NFS_VM" -- bash -c 'sudo mkdir -p /exports/slurm/home'
     multipass exec "$NFS_VM" -- sudo bash -c "echo '/exports/slurm/shared *(rw,sync,no_subtree_check,no_root_squash)'>>/etc/exports"
-    multipass exec "$NFS_VM" -- sudo bash -c "echo '/exports/slurm/keys *(rw,sync,no_subtree_check,no_root_squash)'>>/etc/exports"
+    multipass exec "$NFS_VM" -- sudo bash -c "echo '/exports/slurm/home *(rw,sync,no_subtree_check,no_root_squash)'>>/etc/exports"
     multipass exec "$NFS_VM" -- sudo exportfs -rav
     multipass exec "$NFS_VM" -- sudo ufw allow nfs
 
